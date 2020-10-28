@@ -10,7 +10,14 @@ object AnonymousClasses extends App {
     override def eat: Unit = println("hahahahahah")
   }
 
-
+/*
+1. Generic trait MyPredicate[-T]
+2. Generic trait MyTransformer[-A, B] - converts an A to a B
+3. MyList:
+   - map(MyTransformer) => MyList
+   - filter(MyPredicate) => MyList
+   - flatmap(Transformer from A to MyList[B])
+ */
 
 
 }
