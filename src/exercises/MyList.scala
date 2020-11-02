@@ -32,11 +32,11 @@ case object Empty extends MyList[Nothing] {
 
   override def printElements: String = ""
 
-  override def filter(predicate: Nothing => Boolean): Empty.type = Empty
+  override def filter(predicate: Nothing => Boolean): MyList[Nothing] = Empty
 
-  override def map[B](transformer: Nothing => B): Empty.type = Empty
+  override def map[B](transformer: Nothing => B): MyList[Nothing] = Empty
 
-  override def flatMap[B](transformer: Nothing => MyList[B]): Empty.type = Empty
+  override def flatMap[B](transformer: Nothing => MyList[B]): MyList[Nothing] = Empty
 
   override def ++[B >: Nothing](list: MyList[B]): MyList[B] = list
 }

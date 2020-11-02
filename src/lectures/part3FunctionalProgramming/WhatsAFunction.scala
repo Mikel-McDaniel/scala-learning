@@ -14,9 +14,5 @@ object WhatsAFunction extends App {
 
 
   //THIS IS CALLED A CURRIED FUNCTION
-  val specialFunction: (Int) => Function1[Int, Int] = new Function1[Int, Function1[Int, Int]] {
-    override def apply(int1: Int) = new Function1[Int, Int] {
-      override def apply(int2: Int): Int = int1 + int2
-    }
-  }
+  val specialFunction: (Int) => ((Int) => Int) = (int1: Int) => (int2: Int) => int1 + int2
 }
