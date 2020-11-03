@@ -19,6 +19,12 @@ abstract class MyList[+A] {
   def map[B](transformer: A => B): MyList[B]
   def flatMap[B](transformer: A => MyList[B]): MyList[B]
   def ++[B >: A](list: MyList[B]): MyList[B] //Concat
+
+  //hofs
+  def forEach(f: A => Unit): Unit
+  def sort(compareTo: (A, A) => Int): MyList[A]
+  def zipWith[B, C](list: MyList[B], f: (A, B) => C): MyList[C]
+  def fold[B](start: B)(f: (B, A) => B): B
 }
 
 case object Empty extends MyList[Nothing] {
@@ -39,6 +45,18 @@ case object Empty extends MyList[Nothing] {
   override def flatMap[B](transformer: Nothing => MyList[B]): MyList[Nothing] = Empty
 
   override def ++[B >: Nothing](list: MyList[B]): MyList[B] = list
+
+  override def forEach(f: Nothing => Unit): Unit = ()
+
+  override def sort(compareTo: (Nothing, Nothing) => Int): MyList[Nothing] = Empty
+
+  override def zipWith[B, C](list: MyList[B], f: (Nothing, B) => C): MyList[C] = {
+    if(!list.isEmpty) throw new RuntimeException("Lists must be the same length")
+    else Empty
+  }
+
+  override def fold[B](start: B)(f: (B, Nothing) => B): B = start
+
 }
 
 case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
@@ -64,7 +82,29 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
 
   override def flatMap[B](transformer: A => MyList[B]): MyList[B] = transformer(h) ++ tail.flatMap(transformer)
 
+  //HOFs
+  override def forEach(f: A => Unit): Unit = {
+    f(head)
+    tail.forEach(f)
+  }
 
+  override def sort(compareTo: (A, A) => Int): MyList[A] = {
+
+    def insert(x: A, sortedList: MyList[A]): MyList[A] = {
+      if(sortedList.isEmpty) new Cons(x, Empty)
+      else if(compareTo(x, sortedList.head) <= 0) new Cons(x, sortedList)
+      else new Cons(sortedList.head, insert(x, sortedList.tail))
+    }
+    val sortedTail = tail.sort(compareTo)
+    insert(h, sortedTail)
+  }
+
+  override def zipWith[B, C](list: MyList[B], f: (A, B) => C): MyList[C] = {
+    if(list.isEmpty) throw new RuntimeException("Lists must be the same length")
+    else new Cons(f(head, list.head), tail.zipWith(list.tail, f))
+  }
+
+  override def fold[B](start: B)(f: (B, A) => B): B = tail.fold(f(start, head))(f)
 }
 
 
@@ -72,6 +112,8 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
 object ListTest extends App {
   var cons: MyList[Int] = Empty
 
-  var list = cons.add(1).add(2).add(3).map(n => n * 2)
-  println(list.toString)
+  var list = cons.add(1).add(2).add(3).add(5).add(20).add(53).add(22)
+  var compareTo = (x: Int, y: Int) => {if(x > y) 1 else -1}
+  list = list.sort(compareTo)
+  list.forEach((x: Int) => println(x))
 }
