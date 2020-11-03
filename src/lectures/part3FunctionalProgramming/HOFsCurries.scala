@@ -53,4 +53,12 @@ object HOFsCurries extends App {
 
    */
 
+  def toCurry(func: (Int, Int) => Int): Int => Int => Int = {
+    x => y => func(x, y)
+  }
+
+  def fromCurry(func: Int => Int => Int): (Int, Int) => Int = {
+    (x, y) => func(x)(y)
+  }
+
 }
