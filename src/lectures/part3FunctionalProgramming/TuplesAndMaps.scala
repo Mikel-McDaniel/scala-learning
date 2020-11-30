@@ -47,31 +47,34 @@ object TuplesAndMaps extends App {
 		i. people with no friends
 		j. if there is a social connection between 2 people (Direct or not)
 	 */
-	object network {
-		var networkObject: Map[String, Set[String]] = Map();
+	object Network {
+		def add(network: Map[String, Set[String]], person: String): Map[String, Set[String]] =
+			if (network.keySet.contains(person)) throw new Exception("This person already exists")
+			else  network + (person -> Set[String]())
 
-		def add(person: String): Unit =
-			if (networkObject.keySet.contains(person)) throw new Exception("This person already exists")
-			else networkObject = networkObject + (person -> Set[String]())
-
-		def remove(person: String): Unit =
-			if(networkObject.keySet.contains(person)) networkObject = networkObject.filter(touple => !touple._1.equals(person))
+		def remove(network: Map[String, Set[String]], person: String): Map[String, Set[String]] =
+			if(network.keySet.contains(person)) network.filter(touple => !touple._1.equals(person))
 			else throw new Exception("No such person exists")
 
-		def friend(person1: String, person2: String): Unit =
-			if(networkObject.keySet.contains(person1) && networkObject.contains(person2)) {
-				networkObject.apply(person1) + person2 //TODO: Map is immutable.  Need to find a way to alter only one element
-				networkObject.apply(person2) + person1
-			}
+		def friend(network: Map[String, Set[String]], person1: String, person2: String): Map[String, Set[String]] = {
 
+			if(network.keySet.contains(person1) && network.keySet.contains(person2)) {
+				network.filter(touple => touple._1.equals(person1)).map(touple => (touple._1, touple._2 + person2))
+				val stepOne: (String, Set[String]) = network.filter(touple => touple._1.equals(person1)).map(touple => (touple._1, touple._2 + person2)).toList(0)
+				val stepTwo: (String, Set[String]) = network.filter(touple => touple._1.equals(person2)).map(touple => (touple._1, touple._2 + person1)).toList(0)
+				network + stepOne + stepTwo
+			}
+			else throw new Exception("One or more of the \"Friends\" doesn't exist")
+		}
 
 
 	}
 
-	network.add("Joey")
-	network.add("Moe")
-	network.friend("Joey", "Moe")
-	println(network.networkObject("Moe"))
+	var network: Map[String, Set[String]] = Map[String, Set[String]]();
+	network = Network.add(network, "Joey")
+	network = Network.add(network, "Moe")
+	network = Network.friend(network, "Joey", "Moe")
+	println(network)
 
 
 
