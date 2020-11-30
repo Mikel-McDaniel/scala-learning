@@ -57,9 +57,7 @@ object TuplesAndMaps extends App {
 			else throw new Exception("No such person exists")
 
 		def friend(network: Map[String, Set[String]], person1: String, person2: String): Map[String, Set[String]] = {
-
 			if(network.keySet.contains(person1) && network.keySet.contains(person2)) {
-				network.filter(touple => touple._1.equals(person1)).map(touple => (touple._1, touple._2 + person2))
 				val stepOne: (String, Set[String]) = network.filter(touple => touple._1.equals(person1)).map(touple => (touple._1, touple._2 + person2)).toList(0)
 				val stepTwo: (String, Set[String]) = network.filter(touple => touple._1.equals(person2)).map(touple => (touple._1, touple._2 + person1)).toList(0)
 				network + stepOne + stepTwo
@@ -67,14 +65,41 @@ object TuplesAndMaps extends App {
 			else throw new Exception("One or more of the \"Friends\" doesn't exist")
 		}
 
+		def unfriend(network: Map[String, Set[String]], person1: String, person2: String): Map[String, Set[String]] = {
+			if(network.keySet.contains(person1) && network.keySet.contains(person2)) {
+				val stepOne: (String, Set[String]) = network.filter(touple => touple._1.equals(person1)).map(touple => (touple._1, touple._2 - person2)).toList(0)
+				val stepTwo: (String, Set[String]) = network.filter(touple => touple._1.equals(person2)).map(touple => (touple._1, touple._2 - person1)).toList(0)
+				network + stepOne + stepTwo
+			}
+			else throw new Exception("")
+		}
+
+		def friendCount(network: Map[String, Set[String]], person: String): Int = {
+			if(network.keySet.contains(person)) {
+				network(person).size
+			}
+			else throw new Exception("Person does not exist")
+		}
+
+		def mostFriends(network: Map[String, Set[String]]): Set[String] = {
+			val map: Map[Int, Map[String, Set[String]]] = network.groupBy(tuple => tuple._2.size);
+			val maximum = map.keySet.max
+			map(maximum).keySet
+		}
 
 	}
 
 	var network: Map[String, Set[String]] = Map[String, Set[String]]();
 	network = Network.add(network, "Joey")
 	network = Network.add(network, "Moe")
+	network = Network.add(network, "Schmoe")
 	network = Network.friend(network, "Joey", "Moe")
+	network = Network.friend(network, "Joey", "Schmoe")
 	println(network)
+	println(Network.friendCount(network, "Joey"))
+	network = Network.friend(network, "Joey", "Moe")
+	println(Network.friendCount(network, "Joey"))
+	println(Network.mostFriends(network))
 
 
 
