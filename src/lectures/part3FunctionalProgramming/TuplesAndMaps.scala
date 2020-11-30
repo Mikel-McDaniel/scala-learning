@@ -87,12 +87,21 @@ object TuplesAndMaps extends App {
 			map(maximum).keySet
 		}
 
+		def noFriends(network: Map[String, Set[String]]): Set[String] = {
+			val map: Map[Int, Map[String, Set[String]]] = network.groupBy(tuple => tuple._2.size);
+			val returnMap = map(0).withDefaultValue(null)
+			if (returnMap != null) returnMap.keySet
+			else Set("Nothing")
+		}
+
 	}
 
 	var network: Map[String, Set[String]] = Map[String, Set[String]]();
 	network = Network.add(network, "Joey")
 	network = Network.add(network, "Moe")
 	network = Network.add(network, "Schmoe")
+	network = Network.add(network, "Allan")
+	network = Network.add(network, "Jacobey")
 	network = Network.friend(network, "Joey", "Moe")
 	network = Network.friend(network, "Joey", "Schmoe")
 	println(network)
@@ -100,7 +109,7 @@ object TuplesAndMaps extends App {
 	network = Network.friend(network, "Joey", "Moe")
 	println(Network.friendCount(network, "Joey"))
 	println(Network.mostFriends(network))
-
+	println(Network.noFriends(network))
 
 
 
