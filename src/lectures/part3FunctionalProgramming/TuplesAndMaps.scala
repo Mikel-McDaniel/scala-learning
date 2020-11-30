@@ -47,6 +47,34 @@ object TuplesAndMaps extends App {
 		i. people with no friends
 		j. if there is a social connection between 2 people (Direct or not)
 	 */
+	object network {
+		var networkObject: Map[String, Set[String]] = Map();
+
+		def add(person: String): Unit =
+			if (networkObject.keySet.contains(person)) throw new Exception("This person already exists")
+			else networkObject = networkObject + (person -> Set[String]())
+
+		def remove(person: String): Unit =
+			if(networkObject.keySet.contains(person)) networkObject = networkObject.filter(touple => !touple._1.equals(person))
+			else throw new Exception("No such person exists")
+
+		def friend(person1: String, person2: String): Unit =
+			if(networkObject.keySet.contains(person1) && networkObject.contains(person2)) {
+				networkObject.apply(person1) + person2 //TODO: Map is immutable.  Need to find a way to alter only one element
+				networkObject.apply(person2) + person1
+			}
+
+
+
+	}
+
+	network.add("Joey")
+	network.add("Moe")
+	network.friend("Joey", "Moe")
+	println(network.networkObject("Moe"))
+
+
+
 
 
 }
